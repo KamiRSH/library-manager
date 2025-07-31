@@ -19,20 +19,19 @@ class library {
     }
 
     remove_book(id) {
-        // ids = my_books.map(book => book.id)
         for (const bk of this.my_books) {
             if (bk.id == id) {
                 this.my_books.splice(this.my_books.indexOf(bk), 1)
             }
         }
-        // // this.my_books.splice(this.my_books.indexOf(book), 1)
         return this.my_books
     }
 
     find_book(title) {
-        // titles = this.my_books.map(book => book.title)
-        if (title in this.my_books.map(book => book.title)) {
-            console.log('the number of your book is', this.my_books.map(book => book.title).indexOf(title))
+        let titles = this.my_books.map(book => book.title)
+        if (titles.includes(title)) {
+            let num = titles.indexOf(title) + 1
+            console.log('the number of your book is', num)
         }
         else { 
             console.log("we don't have your book")
@@ -40,14 +39,15 @@ class library {
     }
 
     list_by_author() {
-        console.log(this.my_books.sort((a,b) => {
+        let my_sorted_books = this.my_books.sort((a,b) => {
             if (a.author > b.author) {
                 return 1
             }
             if (a.author < b.author) {
                 return -1
             }
-        }))
+        })
+        console.log(my_sorted_books)
     }
 
     book_count() {
@@ -73,6 +73,7 @@ const st_book = new book(15, 'statistics', 'Zamani', 1395)
 books_ls = [math_book, jeo_book, chem_book, phys_book]
 const library_manager = new library(books_ls)
 
+// // checking outputs -------------------
 // library_manager.book_count()
 // library_manager.list_by_author()
 // library_manager.find_book('math')
