@@ -8,9 +8,6 @@ class book {
   }
 }
 
-// const book1 = new book(11, 'sth', 'man', 19999)
-// console.log(book1)
-
 class library {
     constructor(my_books) {
         this.my_books = my_books
@@ -43,7 +40,14 @@ class library {
     }
 
     list_by_author() {
-        console.log(this.my_books.sort((a,b) => (a.author - b.author)))
+        console.log(this.my_books.sort((a,b) => {
+            if (a.author > b.author) {
+                return 1
+            }
+            if (a.author < b.author) {
+                return -1
+            }
+        }))
     }
 
     book_count() {
@@ -52,10 +56,21 @@ class library {
 
 }
 
-
 // // input(id)
 // for (const bk of my_book) {
 //     if (bk.id == id) {
 //         bad_book = bk
 //     }
 // }
+
+
+const math_book = new book(11, 'math', 'Amini', 1380)
+const jeo_book = new book(12, 'jeography', 'Zahimi', 1333)
+const chem_book = new book(13, 'chemistri', 'Rezaei', 1358)
+const phys_book = new book(14, 'physics', 'Nami', 1387)
+
+books_ls = [math_book, jeo_book, chem_book, phys_book]
+const library_manager = new library(books_ls)
+
+library_manager.book_count()
+library_manager.list_by_author()
