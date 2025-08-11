@@ -50,18 +50,19 @@ class library {
         console.log(my_sorted_books)
     }
 
-    book_count() {
-        console.log(this.my_books.length)
+    async book_count() {
+        return await new Promise(resulve => {
+           setTimeout( () => {
+           console.log(this.my_books.length)
+           resulve()
+        }, 1000) 
+        })
+          
     }
 
 }
 
-// // input(id)
-// for (const bk of my_book) {
-//     if (bk.id == id) {
-//         bad_book = bk
-//     }
-// }
+
 
 
 const math_book = new book(11, 'math', 'Amini', 1380)
