@@ -1,3 +1,6 @@
+const express = require("express")
+const app = express()
+
 class book {
   constructor(id, title, author, year){
     this.id = id
@@ -64,7 +67,6 @@ class library {
 
 
 
-
 const math_book = new book(11, 'math', 'Amini', 1380)
 const jeo_book = new book(12, 'jeography', 'Falah', 1333)
 const chem_book = new book(13, 'chemistri', 'Rezaei', 1358)
@@ -80,3 +82,5 @@ const library_manager = new library(books_ls)
 // library_manager.find_book('math')
 // console.log(library_manager.remove_book(12))
 // console.log(library_manager.add_book(st_book))
+
+app.listen(3000)

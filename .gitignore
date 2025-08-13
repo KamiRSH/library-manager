@@ -1,1 +1,3 @@
 testing_classes.js
+node_modules/
+package-lock.json

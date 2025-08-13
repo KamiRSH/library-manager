@@ -1,0 +1,26 @@
+{
+  "name": "library-manager",
+  "version": "1.0.0",
+  "main": "library.js",
+  "scripts": {
+    "devStart": "nodemon library.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KamiRSH/library-manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KamiRSH/library-manager/issues"
+  },
+  "homepage": "https://github.com/KamiRSH/library-manager#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
