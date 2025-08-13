@@ -1,7 +1,8 @@
 const express = require("express")
 const app = express()
 
-class book {
+
+class Book {
   constructor(id, title, author, year){
     this.id = id
     this.title = title
@@ -11,7 +12,7 @@ class book {
   }
 }
 
-class library {
+class Library {
     constructor(my_books) {
         this.my_books = my_books
     }
@@ -67,14 +68,14 @@ class library {
 
 
 
-const math_book = new book(11, 'math', 'Amini', 1380)
-const jeo_book = new book(12, 'jeography', 'Falah', 1333)
-const chem_book = new book(13, 'chemistri', 'Rezaei', 1358)
-const phys_book = new book(14, 'physics', 'Nami', 1387)
-const st_book = new book(15, 'statistics', 'Zamani', 1395)
+const math_book = new Book(11, 'math', 'Amini', 1380)
+const jeo_book = new Book(12, 'jeography', 'Falah', 1333)
+const chem_book = new Book(13, 'chemistri', 'Rezaei', 1358)
+const phys_book = new Book(14, 'physics', 'Nami', 1387)
+const st_book = new Book(15, 'statistics', 'Zamani', 1395)
 
 books_ls = [math_book, jeo_book, chem_book, phys_book]
-const library_manager = new library(books_ls)
+const library_manager = new Library(books_ls)
 
 // // checking outputs -------------------
 // library_manager.book_count()
