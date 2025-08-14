@@ -1,5 +1,7 @@
-const express = require("express")
+import express from "express"
+import fs from "fs/promises"
 const app = express()
+app.use(express.json())
 
 class User{
     constructor(id, fullName, password, birthDate, phone, email){
@@ -89,6 +91,42 @@ class Library {
 
 }
 
+async function read(file){
+    try{
+        const data = await fs.readFile(file, "utf8")
+        return data
+    }catch(err){
+        console.error("reading error:", err)
+    }
+}
+async function write(fileName, content){
+    try{
+        await fs.writeFile(fileName, JSON.stringify(content))
+    }catch(err){
+        console.error("writing error:", err)
+    }
+}
+
+
+
+let usersFile = await read("./users.json")
+console.log(usersFile)
+
+
+app.get("/", (req, res) => {
+res.send("Welcome to library")
+})
+
+app.post("/signup", (req,res) => {
+    const userDetail = req.body
+    console.log(userDetail)
+    // const userDetail = new User(req.body)
+    write("users.json", userDetail)
+    // usersFile.nestedObject = userDetail
+    Object.assign(usersFile, userDetail)
+    res.send(usersFile)
+})
+
 
 
 const math_book = new Book(11, 'math', 'Amini', 1380, 50, true)
@@ -97,7 +135,7 @@ const chem_book = new Book(13, 'chemistri', 'Rezaei', 1358, 70, true)
 const phys_book = new Book(14, 'physics', 'Nami', 1387, 80, true)
 const st_book = new Book(15, 'statistics', 'Zamani', 1395, 90, true)
 
-books_ls = [math_book, jeo_book, chem_book, phys_book]
+let books_ls = [math_book, jeo_book, chem_book, phys_book]
 const library_manager = new Library(books_ls)
 
 // // checking outputs -------------------
@@ -107,4 +145,5 @@ const library_manager = new Library(books_ls)
 // console.log(library_manager.remove_book(12))
 // console.log(library_manager.add_book(st_book))
 
-// app.listen(3000)
+
+app.listen(4000)

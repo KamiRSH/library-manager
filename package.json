@@ -2,6 +2,7 @@
   "name": "library-manager",
   "version": "1.0.0",
   "main": "library.js",
+  "type": "module",
   "scripts": {
     "devStart": "nodemon library.js"
   },
