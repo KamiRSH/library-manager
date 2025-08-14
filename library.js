@@ -94,7 +94,7 @@ class Library {
 async function read(file){
     try{
         const data = await fs.readFile(file, "utf8")
-        return data
+        return JSON.parse(data)
     }catch(err){
         console.error("reading error:", err)
     }
@@ -109,21 +109,19 @@ async function write(fileName, content){
 
 
 
-let usersFile = await read("./users.json")
-console.log(usersFile)
-
+const usersFile = await read("./users.json")
 
 app.get("/", (req, res) => {
 res.send("Welcome to library")
 })
 
 app.post("/signup", (req,res) => {
+    const user = "jfjdfsf"
     const userDetail = req.body
-    console.log(userDetail)
     // const userDetail = new User(req.body)
     write("users.json", userDetail)
-    // usersFile.nestedObject = userDetail
-    Object.assign(usersFile, userDetail)
+    usersFile[Object.keys(usersFile).length + 1] = userDetail
+    // Object.assign(usersFile, userDetail)
     res.send(usersFile)
 })
 
