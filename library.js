@@ -1,6 +1,7 @@
 import express from "express"
-import { access } from "fs"
+// import { access } from "fs"
 import fs from "fs/promises"
+import { constants } from "fs"
 const app = express()
 app.use(express.json())
 
@@ -127,7 +128,7 @@ class FileSys{
 
   async exist(fileName){
     try{
-        await access(fileName, constants.F_OK)
+        await fs.access(fileName, constants.F_OK)
         return true
     }catch(err){
         return false
@@ -137,10 +138,6 @@ class FileSys{
 
 const fileManager = new FileSys
 
-
-
-
-
 if (!(await fileManager.exist("./users.json"))){
     await fileManager.write("./users.json", {})
 }
@@ -148,15 +145,15 @@ const usersFile = await fileManager.read("./users.json")
 
 
 app.get("/", (req, res) => {
-res.send("Welcome to library")
+    res.send("Welcome to library")
 })
 
 app.post("/signup", (req,res) => {
     const userDetail = req.body
-    // const userDetail = new User(req.body)
-    fileManager.appnd("users.json", userDetail)
+    // // // const userDetail = new User(req.body)
+    // fileManager.appnd("users.json", userDetail)
     usersFile[Object.keys(usersFile).length + 1] = userDetail
-    // Object.assign(usersFile, userDetail)
+    fileManager.write("users.json", usersFile)
     res.send(usersFile)
 })
 
