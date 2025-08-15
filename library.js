@@ -1,4 +1,5 @@
 import express from "express"
+import { access } from "fs"
 import fs from "fs/promises"
 const app = express()
 app.use(express.json())
@@ -91,35 +92,69 @@ class Library {
 
 }
 
-async function read(file){
+class FileSys{
+    constructor() {
+        if (FileSys.instance){
+            return FileSys.instance
+        }
+        FileSys.instance = this
+    }
+
+  async read(file){
     try{
         const data = await fs.readFile(file, "utf8")
         return JSON.parse(data)
     }catch(err){
         console.error("reading error:", err)
     }
-}
-async function write(fileName, content){
+  }
+  
+  async write(fileName, content){
     try{
-        await fs.writeFile(fileName, JSON.stringify(content))
+        await fs.writeFile(fileName, JSON.stringify(content) + "\n")
     }catch(err){
         console.error("writing error:", err)
     }
+  }
+
+  async appnd(fileName, content){
+    try{
+        await fs.appendFile(fileName, JSON.stringify(content) + "\n")
+    }catch(err){
+        console.error("appending error:", err)
+    }
+  }
+
+  async exist(fileName){
+    try{
+        await access(fileName, constants.F_OK)
+        return true
+    }catch(err){
+        return false
+    }
+  }
 }
 
+const fileManager = new FileSys
 
 
-const usersFile = await read("./users.json")
+
+
+
+if (!(await fileManager.exist("./users.json"))){
+    await fileManager.write("./users.json", {})
+}
+const usersFile = await fileManager.read("./users.json")
+
 
 app.get("/", (req, res) => {
 res.send("Welcome to library")
 })
 
 app.post("/signup", (req,res) => {
-    const user = "jfjdfsf"
     const userDetail = req.body
     // const userDetail = new User(req.body)
-    write("users.json", userDetail)
+    fileManager.appnd("users.json", userDetail)
     usersFile[Object.keys(usersFile).length + 1] = userDetail
     // Object.assign(usersFile, userDetail)
     res.send(usersFile)
