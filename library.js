@@ -14,7 +14,6 @@ class User{
         this.phone = phone
         this.email = email
     }
-    signup(){}
 }
 
 class Admin{
@@ -102,7 +101,7 @@ class ManageUser{
         ManageUser.instance = this
     }
 
-    signUp(detail, file){
+    signUp_userGiveID(detail, file){
         for (const i of Object.values(file))
             if (i["id"] == detail["id"] || i["email"] == detail["email"]){
 
@@ -111,7 +110,28 @@ class ManageUser{
             }
         file[Object.keys(file).length + 1] = detail
         fileManager.write("users.json", file)
-        return [file, "your user succesfully added;\nnow you can sign in"]
+        return [file, `user id: ${detail["id"]} successfully added;\nnow you can sign in`]
+    }
+
+    signUp(detail, file){
+        detail["id"] = Object.keys(file).length + 1
+        detail["fullName"] = ""
+        detail["birthDate"] = ""
+        detail["email"] = ""
+
+        for (const i of Object.values(file))
+            if (i["phone"] == detail["phone"]){
+
+                
+                return [file, "your user already exist;\nplease sign in"]
+            }
+        file[Object.keys(file).length + 1] = detail
+        fileManager.write("users.json", file)
+        return [file, `user id: ${detail["id"]} successfully added;\nnow you can sign in`]
+    }
+
+    logIn(detail, file){
+        
     }
 
 }
@@ -135,7 +155,7 @@ class FileSys{
   
   async write(fileName, content){
     try{
-        await fs.writeFile(fileName, JSON.stringify(content) + "\n")
+        await fs.writeFile(fileName, JSON.stringify(content))
     }catch(err){
         console.error("writing error:", err)
     }
@@ -143,7 +163,7 @@ class FileSys{
 
   async appnd(fileName, content){
     try{
-        await fs.appendFile(fileName, JSON.stringify(content) + "\n")
+        await fs.appendFile(fileName, JSON.stringify(content))
     }catch(err){
         console.error("appending error:", err)
     }
@@ -158,11 +178,11 @@ class FileSys{
     }
   }
 
-  stringToJson(str){
-    const a = str.split("\n")
-    const user = new User(Number(a[0]), a[1], a[2], a[3], a[4], a[5])
-    return user
-  }
+//   stringToJson(str){
+//     const a = str.split("\n")
+//     const user = new User(Number(a[0]), a[1], a[2], a[3], a[4], a[5])
+//     return user
+//   }
 }
 
 const userManager = new ManageUser()
