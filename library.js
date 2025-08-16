@@ -131,7 +131,17 @@ class ManageUser{
     }
 
     logIn(detail, file){
-        
+        for (const i of Object.values(file)){
+            if (detail["phone"] == i["phone"]){
+                if (detail["password"] == i["password"]){
+                    const token = Math.round(Math.random() * (10 ** 16 - 10 **15)) + 10 ** 15
+                    return [token, `you successfully logged in\nyour token: ${token}`]
+                }else {
+                    return [null, "wrong password"]
+                }
+            }
+        }
+        return [null, "couldn't find your user\ntry sign up"]
     }
 
 }
@@ -207,13 +217,18 @@ app.get("/", (req, res) => {
 //     res.send(usersFile)
 // })
 app.post("/signup", (req,res) => {
-    const li = userManager.signUp(req.body, usersFile)
-    usersFile = li[0]
-    const note = li[1]
+    const signupli = userManager.signUp(req.body, usersFile)
+    usersFile = signupli[0]
+    const note = signupli[1]
     res.send(note)
 })
 
-
+app.post("/login", (req,res) => {
+    const loginli = userManager.logIn(req.body, usersFile)
+    const token = loginli[0]
+    const note = loginli[1]
+    res.send(note)
+})
 
 // const math_book = new Book("11", 'math', 'Amini', 1380, 50, true)
 // const jeo_book = new Book("12", 'jeography', 'Falah', 1333, 60, true)
