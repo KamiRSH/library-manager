@@ -204,27 +204,21 @@ class FileSys{
 //   }
 }
 
+// define managers
 const userManager = new ManageUser()
 const fileManager = new FileSys()
 
+// [create and] read the usersfile
 if (!(await fileManager.exist("./users.json"))){
     await fileManager.write("./users.json", {})
 }
 let usersFile = await fileManager.read("./users.json")
 
-
+// APIs
 app.get("/", (req, res) => {
     res.send("Welcome to library")
 })
 
-// app.post("/signup", (req,res) => {
-//     const userDetail = req.body
-//     // // // const userDetail = new User(req.body)
-//     // fileManager.appnd("users.json", userDetail)
-//     usersFile[Object.keys(usersFile).length + 1] = userDetail
-//     fileManager.write("users.json", usersFile)
-//     res.send(usersFile)
-// })
 app.post("/signup", (req,res) => {
     const signupli = userManager.signUp(req.body, usersFile)
     usersFile = signupli[0]
