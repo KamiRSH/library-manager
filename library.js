@@ -153,6 +153,18 @@ class ManageUser{
         
     }
 
+    edit(id, file, detail){
+        if (Number(id) <= Object.keys(file).length){
+            for (const i of Object.keys(detail)){
+                file[id][i] = detail[i]
+            }
+            fileManager.write("users.json", file)
+            return [file, `your info successfuly updated: ${file[id]}`]
+        }else{
+            return null
+        }
+    }
+
 }
 
 class FileSys{
@@ -235,6 +247,18 @@ app.post("/login", (req,res) => {
 
 app.get("/users/:id/profile", (req, res) => {
     res.send(userManager.view(req.params.id, usersFile))
+})
+
+app.patch("/users/:id/profile", (req, res) => {
+    const li = userManager.edit(req.params.id, usersFile, req.body)
+    if (li){
+        usersFile = li[0]
+        const note = li[1]
+        res.send(note)
+    }else{
+        res.send(`couldn't find user with id ${req.params.id}`)
+    }
+    
 })
 
 // const math_book = new Book("11", 'math', 'Amini', 1380, 50, true)
