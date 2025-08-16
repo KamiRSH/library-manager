@@ -14,6 +14,7 @@ class User{
         this.phone = phone
         this.email = email
     }
+    signup(){}
 }
 
 class Admin{
@@ -93,6 +94,28 @@ class Library {
 
 }
 
+class ManageUser{
+    constructor() {
+        if (ManageUser.instance){
+            return ManageUser.instance
+        }
+        ManageUser.instance = this
+    }
+
+    signUp(detail, file){
+        for (const i of Object.values(file))
+            if (i["id"] == detail["id"] || i["email"] == detail["email"]){
+
+                
+                return [file, "your user already exist;\nplease sign in"]
+            }
+        file[Object.keys(file).length + 1] = detail
+        fileManager.write("users.json", file)
+        return [file, "your user succesfully added;\nnow you can sign in"]
+    }
+
+}
+
 class FileSys{
     constructor() {
         if (FileSys.instance){
@@ -134,39 +157,52 @@ class FileSys{
         return false
     }
   }
+
+  stringToJson(str){
+    const a = str.split("\n")
+    const user = new User(Number(a[0]), a[1], a[2], a[3], a[4], a[5])
+    return user
+  }
 }
 
-const fileManager = new FileSys
+const userManager = new ManageUser()
+const fileManager = new FileSys()
 
 if (!(await fileManager.exist("./users.json"))){
     await fileManager.write("./users.json", {})
 }
-const usersFile = await fileManager.read("./users.json")
+let usersFile = await fileManager.read("./users.json")
 
 
 app.get("/", (req, res) => {
     res.send("Welcome to library")
 })
 
+// app.post("/signup", (req,res) => {
+//     const userDetail = req.body
+//     // // // const userDetail = new User(req.body)
+//     // fileManager.appnd("users.json", userDetail)
+//     usersFile[Object.keys(usersFile).length + 1] = userDetail
+//     fileManager.write("users.json", usersFile)
+//     res.send(usersFile)
+// })
 app.post("/signup", (req,res) => {
-    const userDetail = req.body
-    // // // const userDetail = new User(req.body)
-    // fileManager.appnd("users.json", userDetail)
-    usersFile[Object.keys(usersFile).length + 1] = userDetail
-    fileManager.write("users.json", usersFile)
-    res.send(usersFile)
+    const li = userManager.signUp(req.body, usersFile)
+    usersFile = li[0]
+    const note = li[1]
+    res.send(note)
 })
 
 
 
-const math_book = new Book(11, 'math', 'Amini', 1380, 50, true)
-const jeo_book = new Book(12, 'jeography', 'Falah', 1333, 60, true)
-const chem_book = new Book(13, 'chemistri', 'Rezaei', 1358, 70, true)
-const phys_book = new Book(14, 'physics', 'Nami', 1387, 80, true)
-const st_book = new Book(15, 'statistics', 'Zamani', 1395, 90, true)
+// const math_book = new Book("11", 'math', 'Amini', 1380, 50, true)
+// const jeo_book = new Book("12", 'jeography', 'Falah', 1333, 60, true)
+// const chem_book = new Book("13", 'chemistri', 'Rezaei', 1358, 70, true)
+// const phys_book = new Book("14", 'physics', 'Nami', 1387, 80, true)
+// const st_book = new Book("15", 'statistics', 'Zamani', 1395, 90, true)
 
-let books_ls = [math_book, jeo_book, chem_book, phys_book]
-const library_manager = new Library(books_ls)
+// let books_ls = [math_book, jeo_book, chem_book, phys_book]
+// const library_manager = new Library(books_ls)
 
 // // checking outputs -------------------
 // library_manager.book_count()
