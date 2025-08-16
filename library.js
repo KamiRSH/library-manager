@@ -144,6 +144,15 @@ class ManageUser{
         return [null, "couldn't find your user\ntry sign up"]
     }
 
+    view(id, file){
+        if (Number(id) <= Object.keys(file).length){
+            return file[id]
+        }else{
+            return `couldn't find user with id ${id}`
+        }
+        
+    }
+
 }
 
 class FileSys{
@@ -228,6 +237,10 @@ app.post("/login", (req,res) => {
     const token = loginli[0]
     const note = loginli[1]
     res.send(note)
+})
+
+app.get("/users/:id/profile", (req, res) => {
+    res.send(userManager.view(req.params.id, usersFile))
 })
 
 // const math_book = new Book("11", 'math', 'Amini', 1380, 50, true)
