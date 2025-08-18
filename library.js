@@ -135,7 +135,7 @@ class ManageUser{
             if (detail["phone"] == i["phone"]){
                 if (detail["password"] == i["password"]){
                     const token = Math.round(Math.random() * (10 ** 16 - 10 **15)) + 10 ** 15
-                    return [token, `you successfully logged in\nyour token: ${token}`]
+                    return [i["id"], token, `you successfully logged in\nyour token: ${token}`]
                 }else {
                     return [null, "wrong password"]
                 }
@@ -225,6 +225,7 @@ if (!(await fileManager.exist("./users.json"))){
     await fileManager.write("./users.json", {})
 }
 let usersFile = await fileManager.read("./users.json")
+const tokens = []     //engar inja har dafe khali mikone
 
 // APIs
 app.get("/", (req, res) => {
@@ -232,16 +233,21 @@ app.get("/", (req, res) => {
 })
 
 app.post("/signup", (req,res) => {
-    const signupli = userManager.signUp(req.body, usersFile)
-    usersFile = signupli[0]
-    const note = signupli[1]
+    const li = userManager.signUp(req.body, usersFile)
+    usersFile = li[0]
+    const note = li[1]
+    tokens.push(null)
+    console.log(tokens)
     res.send(note)
 })
 
 app.post("/login", (req,res) => {
-    const loginli = userManager.logIn(req.body, usersFile)
-    const token = loginli[0]
-    const note = loginli[1]
+    const li = userManager.logIn(req.body, usersFile)
+    // console.log(li)
+    const id = li[0]
+    tokens[id - 1] = li[1]
+    const note = li[2]
+    console.log(tokens)
     res.send(note)
 })
 
@@ -279,3 +285,4 @@ app.patch("/users/:id/profile", (req, res) => {
 
 
 app.listen(4000)
+console.log("helooooooo")
