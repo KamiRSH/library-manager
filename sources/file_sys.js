@@ -9,9 +9,9 @@ export class FileSys{
         FileSys.instance = this
     }
 
-  async read(file){
+  async read(fileName){
     try{
-        const data = await fs.readFile(file, "utf8")
+        const data = await fs.readFile(fileName, "utf8")
         return JSON.parse(data)
     }catch(err){
         console.error("reading error:", err)
@@ -39,6 +39,7 @@ export class FileSys{
         await fs.access(fileName, constants.F_OK)
         return true
     }catch(err){
+        // console.log(err)
         return false
     }
   }

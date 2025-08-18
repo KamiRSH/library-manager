@@ -6,14 +6,15 @@ import { ManageUser } from "./sources/manage_user.js"
 const app = express()
 app.use(express.json())
 
-class User{
-    constructor(id, fullName, password, birthDate, phone, email){
-        this.id = id
-        this.name = fullName
-        this.pass = password
-        this.birth = birthDate
-        this.phone = phone
-        this.email = email
+class User{     //id, fullName, password, birthDate, phone, email
+    constructor(detail){
+        this.id = detail.id
+        this.name = detail.fullName
+        this.pass = detail.password
+        this.birth = detail.birthDate
+        this.phone = detail.phone
+        this.email = detail.email
+        this.token = null
     }
 }
 
@@ -37,38 +38,44 @@ class Book {
 }
 
 // define managers
-const userManager = new ManageUser()
 const fileManager = new FileSys()
-
-// [create and] read the usersfile
+// [create and] read the usersFile
 if (!(await fileManager.exist("./users.json"))){
-    await fileManager.write("./users.json", {})
+    await fileManager.write("./users.json", [])
 }
-let usersFile = await fileManager.read("./users.json")
-const tokens = []     //engar inja har dafe khali mikone
+const usersFile = await fileManager.read("./users.json")
+
+const userManager = new ManageUser(usersFile)
+
+let tokens = []
+for (const i of usersFile){
+    tokens.push(null)
+}
+console.log(tokens)
 
 // APIs
 app.get("/", (req, res) => {
     res.send("Welcome to library")
 })
 
-app.post("/signup", (req,res) => {
-    const li = userManager.signUp(req.body, usersFile)
-    usersFile = li[0]
-    const note = li[1]
+app.post("/signup", (req, res) => {
+    const detail = userManager.signUp(req.body)
     tokens.push(null)
-    console.log(tokens)
-    res.send(note)
+    const signingUpUser = new User(detail)
+    res.send(`user id: ${detail.id} successfully added;\nnow you can sign in`)
 })
 
-app.post("/login", (req,res) => {
-    const li = userManager.logIn(req.body, usersFile)
-    // console.log(li)
-    const id = li[0]
-    tokens[id - 1] = li[1]
-    const note = li[2]
-    console.log(tokens)
-    res.send(note)
+app.post("/login", (req, res) => {
+    const token = Math.round(Math.random() * (10 ** 16 - 10 **15)) + 10 ** 15
+    const index = userManager.logIn(req.body)
+    if (token != -1){
+        tokens[index] = token
+        // console.log(tokens)
+        res.send(`you successfully logged in\nyour token: ${token}`)
+    }else{
+        res.send("phone number or password is incorrect")
+    }
+    
 })
 
 app.get("/users/:id/profile", (req, res) => {
