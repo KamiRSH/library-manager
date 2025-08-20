@@ -56,25 +56,33 @@ export class ManageUser{
         return this.file.indexOf(detail)
     }
 
-    view(id){
-        if (Number(id) < this.file.length){
-            return this.file[id]
+    view(id, tokens, token){
+        if (token == tokens[id]){
+            if (Number(id) < this.file.length){
+                return this.file[id]
+            }else{
+                return `couldn't find user with id ${id}`
+            }
         }else{
-            return `couldn't find user with id ${id}`
+            return "wrong token"
         }
-        
     }
 
-    edit(id, file, detail){
-        if (Number(id) <= Object.keys(file).length){
-            for (const i of Object.keys(detail)){
-                file[id][i] = detail[i]
+    edit(id, detail, tokens, token){
+        if (token == tokens[id]){
+            if (Number(id) < this.file.length){
+                for (const i of Object.keys(detail)){
+                    this.file[id][i] = detail[i]
+                }console.log(this.file)
+                fileManager.write("./users.json", this.file)
+                return "your info successfully updated:"
+            }else{
+                return `couldn't find user with id ${req.params.id}`
             }
-            fileManager.write("./users.json", file)
-            return [file, "your info successfully updated:", file[id]]
         }else{
-            return null
+            return "wrong token"
         }
+        
     }
 
 }

@@ -51,7 +51,6 @@ let tokens = []
 for (const i of usersFile){
     tokens.push(null)
 }
-console.log(tokens)
 
 // APIs
 app.get("/", (req, res) => {
@@ -68,7 +67,7 @@ app.post("/signup", (req, res) => {
 app.post("/login", (req, res) => {
     const token = Math.round(Math.random() * (10 ** 16 - 10 **15)) + 10 ** 15
     const index = userManager.logIn(req.body)
-    if (token != -1){
+    if (index != -1){
         tokens[index] = token
         // console.log(tokens)
         res.send(`you successfully logged in\nyour token: ${token}`)
@@ -79,20 +78,11 @@ app.post("/login", (req, res) => {
 })
 
 app.get("/users/:id/profile", (req, res) => {
-    res.send(userManager.view(req.params.id, usersFile))
+    res.send(userManager.view(req.params.id, tokens, req.get("token")))
 })
 
 app.patch("/users/:id/profile", (req, res) => {
-    const li = userManager.edit(req.params.id, usersFile, req.body)
-    if (li){
-        usersFile = li[0]
-        const note = li[1]
-        const info = li[2]
-        res.send(note, info)
-    }else{
-        res.send(`couldn't find user with id ${req.params.id}`)
-    }
-    
+    res.send(userManager.edit(req.params.id, req.body, tokens, req.get("token")))
 })
 
 // const math_book = new Book("11", 'math', 'Amini', 1380, 50, true)
