@@ -1,4 +1,5 @@
 import express from "express"
+import { randomInt } from "node:crypto"
 import { FileSys } from "./sources/file_sys.js"
 import { Library } from "./sources/library.js"
 import { ManageUser } from "./sources/manage_user.js"
@@ -36,6 +37,11 @@ class Book {
     this.stock = stock
   }
 }
+function generate16digits(){
+  const part1 = randomInt(10 ** 7, 10 ** 8 - 1)
+  const part2 = randomInt(10 ** 7, 10 ** 8 - 1)
+  return Number(part1.toString() + part2.toString())
+}
 
 // define managers
 const fileManager = new FileSys()
@@ -65,7 +71,8 @@ app.post("/signup", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-    const token = Math.round(Math.random() * (10 ** 16 - 10 **15)) + 10 ** 15
+    const token = generate16digits()
+    // const token = Math.round(Math.random() * (10 ** 16 - 10 **15)) + 10 ** 15
     const index = userManager.logIn(req.body)
     if (index != -1){
         tokens[index] = token
