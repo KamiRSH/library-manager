@@ -42,13 +42,18 @@ function generate16digits(){
   const part2 = randomInt(10 ** 7, 10 ** 8 - 1)
   return Number(part1.toString() + part2.toString())
 }
+async function getStarted(fileName){
+    if (!(await fileManager.exist(fileName))){
+        await fileManager.write(fileName, [])
+    }return
+}
 
 // define managers
 const fileManager = new FileSys()
 // [create and] read the usersFile
-if (!(await fileManager.exist("./users.json"))){
-    await fileManager.write("./users.json", [])
-}
+await getStarted("./users.json")
+await getStarted("./books.json")
+
 const usersFile = await fileManager.read("./users.json")
 
 const userManager = new ManageUser(usersFile)
@@ -76,7 +81,6 @@ app.post("/login", (req, res) => {
     const index = userManager.logIn(req.body)
     if (index != -1){
         tokens[index] = token
-        // console.log(tokens)
         res.send(`you successfully logged in\nyour token: ${token}`)
     }else{
         res.send("phone number or password is incorrect")

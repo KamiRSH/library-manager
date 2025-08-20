@@ -73,7 +73,7 @@ export class ManageUser{
             if (Number(id) < this.file.length){
                 for (const i of Object.keys(detail)){
                     this.file[id][i] = detail[i]
-                }console.log(this.file)
+                }
                 fileManager.write("./users.json", this.file)
                 return "your info successfully updated:"
             }else{

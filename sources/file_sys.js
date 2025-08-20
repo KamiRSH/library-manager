@@ -8,8 +8,8 @@ export class FileSys{
         }
         FileSys.instance = this
     }
-
-  async read(fileName){
+  
+    async read(fileName){
     try{
         const data = await fs.readFile(fileName, "utf8")
         return JSON.parse(data)
@@ -39,7 +39,6 @@ export class FileSys{
         await fs.access(fileName, constants.F_OK)
         return true
     }catch(err){
-        // console.log(err)
         return false
     }
   }
