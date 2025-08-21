@@ -52,10 +52,6 @@ export class ManageUser{
         return null
     }
 
-    indexLogIn(detail){
-        return this.file.indexOf(detail)
-    }
-
     view(id, tokens, token){
         if (token == tokens[id]){
             if (Number(id) < this.file.length){
@@ -77,7 +73,7 @@ export class ManageUser{
                 fileManager.write("./users.json", this.file)
                 return "your info successfully updated:"
             }else{
-                return `couldn't find user with id ${req.params.id}`
+                return `couldn't find user with id ${id}`
             }
         }else{
             return "wrong token"
