@@ -48,31 +48,39 @@ async function getStarted(fileName){
     }return
 }
 
-// define managers
+// define managers    // [create and] read the files    // create tokens list
+
 const fileManager = new FileSys()
-// [create and] read the usersFile
+
 await getStarted("./users.json")
 await getStarted("./books.json")
 
 const usersFile = await fileManager.read("./users.json")
+const booksFile = await fileManager.read("./books.json")
 
 const userManager = new ManageUser(usersFile)
+const library = new Library(booksFile)
 
 let tokens = []
 for (const i of usersFile){
     tokens.push(null)
 }
 
-// APIs
+// users APIs
 app.get("/", (req, res) => {
     res.send("Welcome to library")
 })
 
 app.post("/signup", (req, res) => {
     const detail = userManager.signUp(req.body)
-    tokens.push(null)
-    const signingUpUser = new User(detail)
-    res.send(`user id: ${detail.id} successfully added;\nnow you can sign in`)
+    if (detail){
+        tokens.push(null)
+        const signingUpUser = new User(detail)
+        res.send(`user id: ${detail.id} successfully added;\nnow you can login`)
+    }else{
+        res.send("your user already exist\ntry login")
+    }
+    
 })
 
 app.post("/login", (req, res) => {
@@ -95,6 +103,26 @@ app.get("/users/:id/profile", (req, res) => {
 app.patch("/users/:id/profile", (req, res) => {
     res.send(userManager.edit(req.params.id, req.body, tokens, req.get("token")))
 })
+
+// books APIs
+app.get("/books", (req, res) => {
+    res.send(library.viewTitles())
+})
+
+app.get("/books/:book_id", (req, res) => {
+    req.send(library.viewDetail(req.params.book_id))
+})
+
+// admins APIs
+app.post("/admin-panel/books", (req, res) => {
+    req.send(library.addBook(req.body))
+})
+
+app.patch("/admin-panel/books/:book_id", (req, res) => {
+    res.send(library.editBook(req.params.book_id, req.body))
+})
+
+app.delete("/admin-panel/books/:book_id", (req, res) => {})
 
 // const math_book = new Book("11", 'math', 'Amini', 1380, 50, true)
 // const jeo_book = new Book("12", 'jeography', 'Falah', 1333, 60, true)
