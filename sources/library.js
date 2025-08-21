@@ -1,39 +1,67 @@
 export class Library {
-    constructor(my_books) {
+    constructor(file) {
         if (Library.instance){
             return Library.instance
         }
         Library.instance = this
-        this.my_books = my_books
+        this.file = file
     }
 
-    add_book(book) {
-        this.my_books.push(book)
-        return this.my_books
-    }
-
-    remove_book(id) {
-        for (const bk of this.my_books) {
-            if (bk.id == id) {
-                this.my_books.splice(this.my_books.indexOf(bk), 1)
-            }
+    viewTitles(){
+        const bookLi = []
+        for (const i of this.file){
+            bookLi.push(i.title)
         }
-        return this.my_books
+        return bookLi
     }
 
-    find_book(title) {
-        let titles = this.my_books.map(book => book.title)
+    viewDetail(id){
+        return this.file[id]
+    }
+
+    addBook(detail) {
+        detail.id = this.file.length
+        this.file.push(detail)
+        fileManager.write("./books.json", this.file)
+        return `your book with id ${detail.id} successfully added`
+    }
+
+    editBook(id, detail){
+        if (Number(id) < this.file.length){
+            for (const i of Object.keys(detail)){
+                this.file[id][i] = detail[i]
+            }
+            fileManager.write("./books.json", this.file)
+            return "the books info successfully updated:"
+        }else{
+            return `couldn't find the book with id ${id}`
+        }
+    }
+
+    removeBook(id) {
+        if (Number(id) <= this.file.length){
+            this.file[id].splice(this.file.indexOf(bk), 1)
+            fileManager.write("./books.json", this.file)
+            return `the book with id ${id} successfully deleted`
+        }else{
+            return `the book with id ${id} doesn't exist`
+        }
+        
+    }
+
+    findBook(title) {
+        let titles = this.file.map(book => book.title)
         if (titles.includes(title)) {
             let num = titles.indexOf(title) + 1
-            console.log('the number of your book is', num)
+            return `the number of your book is num`
         }
         else { 
-            console.log("we don't have your book")
+            return "we don't have your book"
         }
     }
 
-    list_by_author() {
-        let my_sorted_books = this.my_books.sort((a,b) => {
+    listByAuthor() {
+        let my_sorted_books = this.file.sort((a,b) => {
             if (a.author > b.author) {
                 return 1
             }
@@ -41,17 +69,11 @@ export class Library {
                 return -1
             }
         })
-        console.log(my_sorted_books)
+        return my_sorted_books
     }
 
-    async book_count() {
-        return await new Promise(resulve => {
-           setTimeout( () => {
-           console.log(this.my_books.length)
-           resulve()
-        }, 1000) 
-        })
-          
+    bookCount() {
+        return this.file.length
     }
 
 }
