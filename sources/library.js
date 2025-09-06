@@ -1,3 +1,6 @@
+import { FileSys } from "./file_sys.js"
+const fileManager = new FileSys()
+
 export class Library {
     constructor(file) {
         if (Library.instance){
@@ -5,6 +8,23 @@ export class Library {
         }
         Library.instance = this
         this.file = file
+    }
+
+    static beAdmin(tokens, token){
+        if (token == tokens[0]){
+            return true
+        }else{
+            return false
+        }
+    }
+
+    static findIndexById(id){
+        const usingConstructor = new Library()
+        for (const i of usingConstructor.file){
+            if (i.id == id){
+                return usingConstructor.file.indexOf(i)
+            }
+        }
     }
 
     viewTitles(){
@@ -16,37 +36,91 @@ export class Library {
     }
 
     viewDetail(id){
-        return this.file[id]
+        if (Library.findIndexById(id) < this.file.length){
+            return this.file[Library.findIndexById(id)]
+        }else{
+            return `couldn't find your book with id ${id}`
+        }
+        
     }
 
-    addBook(detail) {
-        detail.id = this.file.length
-        this.file.push(detail)
-        fileManager.write("./books.json", this.file)
-        return `your book with id ${detail.id} successfully added`
+    addBook(detail, tokens, token) {
+        if (Library.beAdmin(tokens, token)){
+            if (this.file.length == 0){
+                detail.id = 0
+            }else{
+                detail.id = this.file[this.file.length -1].id + 1
+            }
+            detail.stock = true
+            this.file.push(detail)
+            fileManager.write("./books.json", this.file)
+            return `your book with id ${detail.id} successfully added`
+        }else{
+            return "make sure you are admin and you entered your token correctly"
+        }
+        
     }
 
     editBook(id, detail){
-        if (Number(id) < this.file.length){
-            for (const i of Object.keys(detail)){
-                this.file[id][i] = detail[i]
+        if (Library.beAdmin){
+            if (Library.findIndexById(id) < this.file.length){
+                for (const i of Object.keys(detail)){
+                    this.file[Library.findIndexById(id)][i] = detail[i]
+                }
+                fileManager.write("./books.json", this.file)
+                return "the books info successfully updated:"
+            }else{
+                return `couldn't find the book with id ${id}`
             }
-            fileManager.write("./books.json", this.file)
-            return "the books info successfully updated:"
         }else{
-            return `couldn't find the book with id ${id}`
+            return "make sure you are admin and you entered your token correctly"
         }
+        
     }
 
     removeBook(id) {
-        if (Number(id) <= this.file.length){
-            this.file[id].splice(this.file.indexOf(bk), 1)
-            fileManager.write("./books.json", this.file)
-            return `the book with id ${id} successfully deleted`
+        if (Library.beAdmin){
+            if (Library.findIndexById(id) < this.file.length){
+                this.file.splice(Library.findIndexById(id), 1)
+                fileManager.write("./books.json", this.file)
+                return `the book with id ${id} successfully deleted`
+            }else{
+                return `the book with id ${id} doesn't exist`
+            }
         }else{
-            return `the book with id ${id} doesn't exist`
+            return "make sure you are admin and you entered your token correctly"
         }
         
+    }
+
+    filter(url){
+        // const items = {
+        //     "title": 0,
+        //     "author": 0,
+        //     "publishYear": 0,
+        //     "price": 0,
+        //     "id": 0,
+        //     "stock": 0
+        // }
+        const li = []
+        const li_id = []
+        for (const i of this.file){
+            li.push(o)
+        }
+        
+        for (const i of this.file){
+            for (const j of Object.keys(i)){
+                if (url[j] && url[j] == i[j]){
+                    li[this.file.indexOf(i)] += 1
+                }
+            }
+        }
+        for (const i of li){
+            if (i == Object.keys(url) - 1)
+                li_id.push(this.file[li.indexOf(i)].id)
+        }
+        return li_id
+
     }
 
     findBook(title) {

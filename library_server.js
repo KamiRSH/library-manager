@@ -7,23 +7,16 @@ import { ManageUser } from "./sources/manage_user.js"
 const app = express()
 app.use(express.json())
 
-class User{     //id, fullName, password, birthDate, phone, email
+class User{     //id, fullName, password, birthDate, phone, email, role
     constructor(detail){
-        this.id = detail.id
+        this.id = detail.id     // I guess it should be handle in front; so in this case you should memorize it
         this.name = detail.fullName
         this.pass = detail.password
         this.birth = detail.birthDate
         this.phone = detail.phone
         this.email = detail.email
         this.token = null
-    }
-}
-
-class Admin{
-    constructor(id, fullName, password){
-        this.id = id
-        this.name = fullName
-        this.pass = password
+        this.role = null
     }
 }
 
@@ -34,7 +27,7 @@ class Book {
     this.author = author
     this.year = publishYear
     this.price = price
-    this.stock = stock
+    this.stock = null
   }
 }
 function generate16digits(){
@@ -110,19 +103,27 @@ app.get("/books", (req, res) => {
 })
 
 app.get("/books/:book_id", (req, res) => {
-    req.send(library.viewDetail(req.params.book_id))
+    res.send(library.viewDetail(req.params.book_id))
 })
 
 // admins APIs
 app.post("/admin-panel/books", (req, res) => {
-    req.send(library.addBook(req.body))
+    res.send(library.addBook(req.body, tokens, req.get("token")))
 })
 
 app.patch("/admin-panel/books/:book_id", (req, res) => {
-    res.send(library.editBook(req.params.book_id, req.body))
+    res.send(library.editBook(req.params.book_id, req.body, tokens, req.get("token")))
 })
 
-app.delete("/admin-panel/books/:book_id", (req, res) => {})
+app.delete("/admin-panel/books/:book_id", (req, res) => {
+    res.send(library.removeBook(req.params.book_id))
+})
+
+app.get("/bookss/search", (req, res) => {
+    const filter = req.query
+    console.log(filter.title)
+    res.send()
+})
 
 // const math_book = new Book("11", 'math', 'Amini', 1380, 50, true)
 // const jeo_book = new Book("12", 'jeography', 'Falah', 1333, 60, true)

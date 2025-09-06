@@ -27,6 +27,11 @@ export class ManageUser{
         detail.fullName = ""
         detail.birthDate = ""
         detail.email = ""
+        if (this.file.length == 0){
+            detail.role = "admin"
+        }else{
+            detail.role = "user"
+        }
 
         for (const i of this.file)
             if (i.phone == detail.phone){
@@ -49,36 +54,43 @@ export class ManageUser{
                 }
             }
         }
-        return null
+        return -1
     }
 
     view(id, tokens, token){
-        if (token == tokens[id]){
-            if (Number(id) < this.file.length){
+        if (Number(id) < this.file.length){
+            if (token == tokens[id]){
                 return this.file[id]
             }else{
-                return `couldn't find user with id ${id}`
+                return "wrong token"
             }
         }else{
-            return "wrong token"
+            return `couldn't find user with id ${id}`
         }
     }
 
     edit(id, detail, tokens, token){
-        if (token == tokens[id]){
-            if (Number(id) < this.file.length){
+        if (Number(id) < this.file.length){
+            if (token == tokens[id]){
                 for (const i of Object.keys(detail)){
                     this.file[id][i] = detail[i]
                 }
                 fileManager.write("./users.json", this.file)
                 return "your info successfully updated:"
             }else{
-                return `couldn't find user with id ${id}`
+                return "wrong token"
             }
         }else{
-            return "wrong token"
+            return `couldn't find user with id ${id}`
         }
-        
+    }
+
+    beAdmin(tokens, token){
+        if (token == tokens[0]){
+            return true
+        }else{
+            return false
+        }
     }
 
 }
