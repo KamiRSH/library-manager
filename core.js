@@ -1,55 +1,32 @@
 import express from "express"
 import { randomInt } from "node:crypto"
-import { FileSys } from "./sources/file_sys.js"
-import { Library } from "./sources/library.js"
-import { ManageUser } from "./sources/manage_user.js"
+import { DTO } from "./model.js"
+import { Library } from "./services/library.js"
+import { ManageUser } from "./services/manage_user.js"
 
 const app = express()
 app.use(express.json())
 
-class User{     //id, fullName, password, birthDate, phone, email, role
-    constructor(detail){
-        this.id = detail.id     // I guess it should be handle in front; so in this case you should memorize it
-        this.name = detail.fullName
-        this.pass = detail.password
-        this.birth = detail.birthDate
-        this.phone = detail.phone
-        this.email = detail.email
-        this.token = null
-        this.role = null
-    }
-}
-
-class Book {
-  constructor(id, title, author, publishYear, price, stock){
-    this.id = id
-    this.title = title
-    this.author = author
-    this.year = publishYear
-    this.price = price
-    this.stock = null
-  }
-}
 function generate16digits(){
   const part1 = randomInt(10 ** 7, 10 ** 8 - 1)
   const part2 = randomInt(10 ** 7, 10 ** 8 - 1)
   return Number(part1.toString() + part2.toString())
 }
 async function getStarted(fileName){
-    if (!(await fileManager.exist(fileName))){
-        await fileManager.write(fileName, [])
+    if (!(await dto.exist(fileName))){
+        await dto.write(fileName, [])
     }return
 }
 
 // define managers    // [create and] read the files    // create tokens list
 
-const fileManager = new FileSys()
+const dto = new DTO()
 
-await getStarted("./users.json")
-await getStarted("./books.json")
+await getStarted("./repo/users.json")
+await getStarted("./repo/books.json")
 
-const usersFile = await fileManager.read("./users.json")
-const booksFile = await fileManager.read("./books.json")
+const usersFile = await dto.read("./repo/users.json")
+const booksFile = await dto.read("./repo/books.json")
 
 const userManager = new ManageUser(usersFile)
 const library = new Library(booksFile)
@@ -68,7 +45,6 @@ app.post("/signup", (req, res) => {
     const detail = userManager.signUp(req.body)
     if (detail){
         tokens.push(null)
-        const signingUpUser = new User(detail)
         res.send(`user id: ${detail.id} successfully added;\nnow you can login`)
     }else{
         res.send("your user already exist\ntry login")

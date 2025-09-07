@@ -1,5 +1,5 @@
-import { FileSys } from "./file_sys.js"
-const fileManager = new FileSys()
+import { DTO } from "../model.js"
+const dto = new DTO()
 
 export class ManageUser{
     constructor(usersFile) {
@@ -18,7 +18,7 @@ export class ManageUser{
                 return [file, "your user already exist;\nplease sign in"]
             }
         file[Object.keys(file).length + 1] = detail
-        fileManager.write("./users.json", file)
+        dto.write("./repo/users.json", file)
         return [file, `user id: ${detail["id"]} successfully added;\nnow you can sign in`]
     }
 
@@ -39,7 +39,7 @@ export class ManageUser{
             }
         // file[Object.keys(file).length + 1] = detail
         this.file.push(detail)
-        fileManager.write("./users.json", this.file)
+        dto.write("./repo/users.json", this.file)
         return detail
     }
 
@@ -75,7 +75,7 @@ export class ManageUser{
                 for (const i of Object.keys(detail)){
                     this.file[id][i] = detail[i]
                 }
-                fileManager.write("./users.json", this.file)
+                dto.write("./repo/users.json", this.file)
                 return "your info successfully updated:"
             }else{
                 return "wrong token"
