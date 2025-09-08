@@ -1,6 +1,6 @@
 import express from "express"
 import { randomInt } from "node:crypto"
-import { DTO } from "./model.js"
+import { FileSys } from "./repo/file_system.js"
 import { Library } from "./services/library.js"
 import { ManageUser } from "./services/manage_user.js"
 
@@ -13,20 +13,20 @@ function generate16digits(){
   return Number(part1.toString() + part2.toString())
 }
 async function getStarted(fileName){
-    if (!(await dto.exist(fileName))){
-        await dto.write(fileName, [])
+    if (!(await fileSys.exist(fileName))){
+        await fileSys.write(fileName, [])
     }return
 }
 
 // define managers    // [create and] read the files    // create tokens list
 
-const dto = new DTO()
+const fileSys = new FileSys()
 
 await getStarted("./repo/users.json")
 await getStarted("./repo/books.json")
 
-const usersFile = await dto.read("./repo/users.json")
-const booksFile = await dto.read("./repo/books.json")
+const usersFile = await fileSys.read("./users.json")
+const booksFile = await fileSys.read("./books.json")
 
 const userManager = new ManageUser(usersFile)
 const library = new Library(booksFile)
