@@ -21,9 +21,10 @@ async function getStarted(fileName){
 // define managers    // [create and] read the files    // create tokens list
 
 const fileSys = new FileSys()
+fileSys.exist()
+// await getStarted("./repo/users.json")
+// await getStarted("./repo/books.json")
 
-await getStarted("./repo/users.json")
-await getStarted("./repo/books.json")
 
 const usersFile = await fileSys.read("./repo/users.json")
 const booksFile = await fileSys.read("./repo/books.json")
