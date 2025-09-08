@@ -25,8 +25,8 @@ const fileSys = new FileSys()
 await getStarted("./repo/users.json")
 await getStarted("./repo/books.json")
 
-const usersFile = await fileSys.read("./users.json")
-const booksFile = await fileSys.read("./books.json")
+const usersFile = await fileSys.read("./repo/users.json")
+const booksFile = await fileSys.read("./repo/books.json")
 
 const userManager = new ManageUser(usersFile)
 const library = new Library(booksFile)

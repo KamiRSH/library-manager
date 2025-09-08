@@ -18,7 +18,7 @@ export class ManageUser{
                 return [file, "your user already exist;\nplease sign in"]
             }
         file[Object.keys(file).length + 1] = detail
-        fileSys.write("./users.json", file)
+        fileSys.write("./repo/users.json", file)
         return [file, `user id: ${detail["id"]} successfully added;\nnow you can sign in`]
     }
 
@@ -39,7 +39,7 @@ export class ManageUser{
             }
         // file[Object.keys(file).length + 1] = detail
         this.file.push(detail)
-        fileSys.write("./users.json", this.file)
+        fileSys.write("./repo/users.json", this.file)
         return detail
     }
 
@@ -75,7 +75,7 @@ export class ManageUser{
                 for (const i of Object.keys(detail)){
                     this.file[id][i] = detail[i]
                 }
-                fileSys.write("./users.json", this.file)
+                fileSys.write("./repo/users.json", this.file)
                 return "your info successfully updated:"
             }else{
                 return "wrong token"

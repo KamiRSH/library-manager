@@ -9,7 +9,7 @@ export class FileSys{
         FileSys.instance = this
     }
   
-    async read(fileName){
+  async read(fileName){
     try{
         const data = await fs.readFile(fileName, "utf8")
         return JSON.parse(data)

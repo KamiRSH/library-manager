@@ -53,7 +53,7 @@ export class Library {
             }
             detail.stock = true
             this.file.push(detail)
-            fileSys.write("./books.json", this.file)
+            fileSys.write("./repo/books.json", this.file)
             return `your book with id ${detail.id} successfully added`
         }else{
             return "make sure you are admin and you entered your token correctly"
@@ -67,7 +67,7 @@ export class Library {
                 for (const i of Object.keys(detail)){
                     this.file[Library.findIndexById(id)][i] = detail[i]
                 }
-                fileSys.write("./books.json", this.file)
+                fileSys.write("repo/books.json", this.file)
                 return "the books info successfully updated:"
             }else{
                 return `couldn't find the book with id ${id}`
@@ -82,7 +82,7 @@ export class Library {
         if (Library.beAdmin){
             if (Library.findIndexById(id) < this.file.length){
                 this.file.splice(Library.findIndexById(id), 1)
-                fileSys.write("./books.json", this.file)
+                fileSys.write("./repo/books.json", this.file)
                 return `the book with id ${id} successfully deleted`
             }else{
                 return `the book with id ${id} doesn't exist`
