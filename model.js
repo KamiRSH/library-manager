@@ -59,8 +59,8 @@ export class DTO{
     }
 
     objBooks_to_jBooks(objUsers){
-        for (const user of objUsers){
-            this.jUsersList.push({...user})
+        for (const book of objBooks){
+            this.jBooksList.push({...book})
         }
         return this.jBooksList
     }
