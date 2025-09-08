@@ -1,6 +1,7 @@
 import express from "express"
 import { randomInt } from "node:crypto"
-import { FileSys } from "./repo/file_system.js"
+// import { FileSys } from "./repo/file_system.js"     //using exist function to write the file at first
+// import { DTO } from "./model.js"
 import { Library } from "./services/library.js"
 import { ManageUser } from "./services/manage_user.js"
 
@@ -22,15 +23,16 @@ async function getStarted(fileName){
 
 const fileSys = new FileSys()
 fileSys.exist()
+const dto = new DTO()
 // await getStarted("./repo/users.json")
 // await getStarted("./repo/books.json")
 
 
-const usersFile = await fileSys.read("./repo/users.json")
-const booksFile = await fileSys.read("./repo/books.json")
+// const usersFile = await fileSys.read("./repo/users.json")
+// const booksFile = await fileSys.read("./repo/books.json")
 
-const userManager = new ManageUser(usersFile)
-const library = new Library(booksFile)
+const userManager = new ManageUser(dto.jFile_to_objUsers(await fileSys.read("./repo/users.json")))
+const library = new Library(dto.jFile_to_objBooks(await fileSys.read("./repo/books.json")))
 
 let tokens = []
 for (const i of usersFile){

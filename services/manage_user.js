@@ -1,13 +1,15 @@
-import { FileSys } from "../repo/file_system.js"
+// import { FileSys } from "../repo/file_system.js"
+import { DTO } from "../model.js"
 const fileSys = new FileSys()
+const dto = new DTO()
 
 export class ManageUser{
-    constructor(usersFile) {
+    constructor(usersLi) {
         if (ManageUser.instance){
             return ManageUser.instance
         }
         ManageUser.instance = this
-        this.file = usersFile
+        this.usersLi = usersLi
     }
 
     signUp_userGiveID(detail, file){
@@ -22,33 +24,35 @@ export class ManageUser{
         return [file, `user id: ${detail["id"]} successfully added;\nnow you can sign in`]
     }
 
-    signUp(detail){
-        detail.id = this.file.length
-        detail.fullName = ""
-        detail.birthDate = ""
-        detail.email = ""
-        if (this.file.length == 0){
-            detail.role = "admin"
-        }else{
-            detail.role = "user"
-        }
-
-        for (const i of this.file)
-            if (i.phone == detail.phone){
+    signUp(objDetail){
+        for (const i of this.usersLi){
+            if (i.phone == objDetail.phone){
                 return null
             }
+        }
+        // detail.id = this.usersLi.length
+        // detail.fullName = ""
+        // detail.birthDate = ""
+        // detail.email = ""
+        // if (this.usersLi.length == 0){
+        //     detail.role = "admin"
+        // }else{
+        //     detail.role = "user"
+        // }
+
+        
         // file[Object.keys(file).length + 1] = detail
-        this.file.push(detail)
-        fileSys.write("./repo/users.json", this.file)
-        return detail
+        this.usersLi.push(objDetail)
+        dto.objUsers_to_jFile(this.usersLi)
+        return objDetail
     }
 
     logIn(detail){
-        for (const i of this.file){
+        for (const i of this.usersLi){
             if (detail.phone == i.phone){
                 if (detail.password == i.password){
                     // const token = Math.round(Math.random() * (10 ** 16 - 10 **15)) + 10 ** 15
-                    return this.file.indexOf(i)
+                    return this.usersLi.indexOf(i)
                 }else {
                     return -1
                 }
@@ -58,9 +62,9 @@ export class ManageUser{
     }
 
     view(id, tokens, token){
-        if (Number(id) < this.file.length){
+        if (Number(id) < this.usersLi.length){
             if (token == tokens[id]){
-                return this.file[id]
+                return this.usersLi[id]
             }else{
                 return "wrong token"
             }
@@ -70,12 +74,12 @@ export class ManageUser{
     }
 
     edit(id, detail, tokens, token){
-        if (Number(id) < this.file.length){
+        if (Number(id) < this.usersLi.length){
             if (token == tokens[id]){
                 for (const i of Object.keys(detail)){
-                    this.file[id][i] = detail[i]
+                    this.usersLi[id][i] = detail[i]
                 }
-                fileSys.write("./repo/users.json", this.file)
+                fileSys.write("./repo/users.json", this.usersLi)
                 return "your info successfully updated:"
             }else{
                 return "wrong token"

@@ -1,20 +1,21 @@
 import { FileSys } from "./repo/file_system.js"
+const fileSys = new FileSys()
 
-class User{     //id, fullName, password, birthDate, phone, email, role
-    constructor(detail){
-        this.id = detail.id     // I guess it should be handle in front; so in this case you should memorize it
-        this.name = detail.fullName
-        this.pass = detail.password
-        this.birth = detail.birthDate
-        this.phone = detail.phone
-        this.email = detail.email
+class User{
+    constructor(id, fullName, password, birthDate, phone, email){
+        this.id = id
+        this.name = fullName
+        this.pass = password
+        this.birth = birthDate
+        this.phone = phone
+        this.email = email
         this.token = null
         this.role = null
     }
 }
 
-class Book {
-  constructor(id, title, author, publishYear, price, stock){
+class Book{
+  constructor(id, title, author, publishYear, price){
     this.id = id
     this.title = title
     this.author = author
@@ -30,39 +31,46 @@ export class DTO{
             return DTO.instance
         }
         DTO.instance = this
-        this.objUsersList = []
-        this.jUsersList = []
-
-        this.objBooksList = []
-        this.jBooksList = []
     }
 
-    jUsers_to_objUsers(jUsers){
-        for (const user of jUsers){
-            this.objUsersList.push(new User(user))
+    jFile_to_objUsers(){
+        jFile = fileSys.read("./repo/users.json")
+        const li =[]
+        for (const detail of jFile){
+            li.push(new User(detail.id, detail.fullName, detail.password, detail.birthDate, detail.phone, detail.email))
         }
-        return this.objUsersList
+        return li
     }
 
-    objUsers_to_jUsers(objUsers){
+    objUsers_to_jFile(objUsers){
+        const li = []
         for (const user of objUsers){
-            this.jUsersList.push({...user})
+            li.push({...user})
         }
-        return this.jUsersList
+        fileSys.write("./repo/users.json", li)
+        return
     }
 
-    jBooks_to_objBooks(jBooks){
-        for (const book of jBooks){
-            this.objBooksList.push(new Book(book))
+    jFile_to_objBooks(){
+        const jFile = fileSys.read("./repo/books.json")
+        const li = []
+        for (const detail of jFile){
+            li.push(new Book(detail.id, detail.title, detail.author, detail.publishYear, detail.price))
         }
-        return this.objBooksList
+        return li
     }
 
-    objBooks_to_jBooks(objUsers){
+    objBooks_to_jBooks(objBooks){
+        const li = []
         for (const book of objBooks){
-            this.jBooksList.push({...book})
+            li.push({...book})
         }
-        return this.jBooksList
+        fileSys.write("./repo/books.json", li)
+        return
+    }User
+
+    jDetailToObjUser(detail){
+        return new User(detail.id, detail.fullName, detail.password, detail.birthDate, detail.phone, detail.email)
     }
     
 }
