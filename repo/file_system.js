@@ -37,9 +37,10 @@ export class FileSys{
   async exist(fileName){
     try{
         await fs.access(fileName, constants.F_OK)
-        return true
+        // return true
     }catch(err){
-        return false
+        await fs.writeFile(fileName, [])
+        // return false
     }
   }
 
