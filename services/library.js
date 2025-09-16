@@ -61,8 +61,8 @@ export class Library {
         
     }
 
-    editBook(id, detail){
-        if (Library.beAdmin){
+    editBook(id, detail, tokens, token){
+        if (Library.beAdmin(tokens, token)){
             if (Library.findIndexById(id) < this.booksLi.length){
                 for (const i of Object.keys(detail)){
                     this.booksLi[Library.findIndexById(id)][i] = detail[i]
@@ -78,8 +78,8 @@ export class Library {
         
     }
 
-    removeBook(id) {
-        if (Library.beAdmin){
+    removeBook(id, tokens, token) {
+        if (Library.beAdmin(tokens, token)){
             if (Library.findIndexById(id) < this.booksLi.length){
                 this.booksLi.splice(Library.findIndexById(id), 1)
                 fileSys.write("./repo/books.json", this.booksLi)

@@ -1,124 +1,137 @@
-import express from "express"
-import { randomInt } from "node:crypto"
-// import { FileSys } from "./repo/file_system.js"     //using exist function to write the file at first
-// import { DTO } from "./model.js"
 import { Library } from "./services/library.js"
 import { ManageUser } from "./services/manage_user.js"
+import { Tools } from "./services/tools.js"
 
-const app = express()
-app.use(express.json())
+const userManager = new ManageUser(dto.jFile_to_objUsers("./repo/users.json"))
+const library = new Library(dto.jFile_to_objBooks("./repo/books.json"))
+const tools = new Tools()
 
-function generate16digits(){
-  const part1 = randomInt(10 ** 7, 10 ** 8 - 1)
-  const part2 = randomInt(10 ** 7, 10 ** 8 - 1)
-  return Number(part1.toString() + part2.toString())
-}
-async function getStarted(fileName){
-    if (!(await fileSys.exist(fileName))){
-        await fileSys.write(fileName, [])
-    }return
-}
-
-// define managers    // [create and] read the files    // create tokens list
-
-const fileSys = new FileSys()
-fileSys.exist()
-const dto = new DTO()
-// await getStarted("./repo/users.json")
-// await getStarted("./repo/books.json")
-
-
-// const usersFile = await fileSys.read("./repo/users.json")
-// const booksFile = await fileSys.read("./repo/books.json")
-
-const userManager = new ManageUser(dto.jFile_to_objUsers(await fileSys.read("./repo/users.json")))
-const library = new Library(dto.jFile_to_objBooks(await fileSys.read("./repo/books.json")))
-
-let tokens = []
-for (const i of usersFile){
-    tokens.push(null)
-}
-
-// users APIs
-app.get("/", (req, res) => {
-    res.send("Welcome to library")
-})
-
-app.post("/signup", (req, res) => {
-    const detail = userManager.signUp(req.body)
-    if (detail){
-        tokens.push(null)
-        res.send(`user id: ${detail.id} successfully added;\nnow you can login`)
-    }else{
-        res.send("your user already exist\ntry login")
+export class Core{
+    constructor(){
+        if (Core.instance){
+            return Core.instance
+        }
+        Core.instance = this
+        this.tokens = []
+        for (const i of userManager.usersLi){
+            this.tokens.push(null)
+        } 
     }
-    
-})
 
-app.post("/login", (req, res) => {
-    const token = generate16digits()
-    // const token = Math.round(Math.random() * (10 ** 16 - 10 **15)) + 10 ** 15
-    const index = userManager.logIn(req.body)
-    if (index != -1){
-        tokens[index] = token
-        res.send(`you successfully logged in\nyour token: ${token}`)
-    }else{
-        res.send("phone number or password is incorrect")
+    lobby(){
+        return "Welcome to library"
     }
+
+    signup(reqBody){
+        const detail = userManager.signUp(reqBody)
+        if (detail){
+            this.tokens.push(null)
+            return `user id: ${detail.id} successfully added;\nnow you can login`
+        }else{
+            return "your user already exist\ntry login"
+        }
+    }
+
+    login(reqBody){
+        const token = tools.generate16digits()
+        const index = userManager.logIn(reqBody)
+        if (index != -1){
+            this.tokens[index] = token
+            return `you successfully logged in\nyour token: ${token}`
+        }else{
+            return "phone number or password is incorrect"
+        }
+    }
+
+    viewUser(reqParamsId, reqGetToken){
+        return userManager.view(reqParamsId, this.tokens, reqGetToken)
+    }
+
+    editUser(reqParamsId, reqBody, reqGetToken){
+        return userManager.edit(reqParamsId, reqBody, this.tokens, reqGetToken)
+    }
+
+    viewBooksList(){
+        return library.viewTitles()
+    }
+
+    viewBook(reqParamsBookId){
+        return library.viewDetail(reqParamsBookId)
+    }
+
+    addBook(reqBody, reqGetToken){
+        return library.addBook(reqBody, this.tokens, reqGetToken)
+    }
+
+    editBook(reqParamsBookId, reqBody, reqGetToken){
+        return library.editBook(reqParamsBookId, reqBody, this.tokens, reqGetToken)
+    }
+
+    removeBook(reqParamsBookId){
+        return library.removeBook(reqParamsBookId)
+    }
+}
+
+// // users APIs
+// app.get("/", (req, res) => {
+//     res.send("Welcome to library")
+// })
+
+// app.post("/signup", (req, res) => {
+//     const detail = userManager.signUp(req.body)
+//     if (detail){
+//         this.tokens.push(null)
+//         res.send(`user id: ${detail.id} successfully added;\nnow you can login`)
+//     }else{
+//         res.send("your user already exist\ntry login")
+//     }
     
-})
+// })
 
-app.get("/users/:id/profile", (req, res) => {
-    res.send(userManager.view(req.params.id, tokens, req.get("token")))
-})
+// app.post("/login", (req, res) => {
+//     const token = tools.generate16digits()
+//     const index = userManager.logIn(req.body)
+//     if (index != -1){
+//         this.tokens[index] = token
+//         res.send(`you successfully logged in\nyour token: ${token}`)
+//     }else{
+//         res.send("phone number or password is incorrect")
+//     }
+    
+// })
 
-app.patch("/users/:id/profile", (req, res) => {
-    res.send(userManager.edit(req.params.id, req.body, tokens, req.get("token")))
-})
+// app.get("/users/:id/profile", (req, res) => {
+//     res.send(userManager.view(req.params.id, this.tokens, req.get("token")))
+// })
 
-// books APIs
-app.get("/books", (req, res) => {
-    res.send(library.viewTitles())
-})
+// app.patch("/users/:id/profile", (req, res) => {
+//     res.send(userManager.edit(req.params.id, req.body, this.tokens, req.get("token")))
+// })
 
-app.get("/books/:book_id", (req, res) => {
-    res.send(library.viewDetail(req.params.book_id))
-})
+// // books APIs
+// app.get("/books", (req, res) => {
+//     res.send(library.viewTitles())
+// })
 
-// admins APIs
-app.post("/admin-panel/books", (req, res) => {
-    res.send(library.addBook(req.body, tokens, req.get("token")))
-})
+// app.get("/books/:book_id", (req, res) => {
+//     res.send(library.viewDetail(req.params.book_id))
+// })
 
-app.patch("/admin-panel/books/:book_id", (req, res) => {
-    res.send(library.editBook(req.params.book_id, req.body, tokens, req.get("token")))
-})
+// // admins APIs
+// app.post("/admin-panel/books", (req, res) => {
+//     res.send(library.addBook(req.body, this.tokens, req.get("token")))
+// })
 
-app.delete("/admin-panel/books/:book_id", (req, res) => {
-    res.send(library.removeBook(req.params.book_id))
-})
+// app.patch("/admin-panel/books/:book_id", (req, res) => {
+//     res.send(library.editBook(req.params.book_id, req.body, this.tokens, req.get("token")))
+// })
 
-app.get("/bookss/search", (req, res) => {
-    const filter = req.query
-    console.log(filter.title)
-    res.send()
-})
+// app.delete("/admin-panel/books/:book_id", (req, res) => {
+//     res.send(library.removeBook(req.params.book_id))
+// })
 
-// const math_book = new Book("11", 'math', 'Amini', 1380, 50, true)
-// const jeo_book = new Book("12", 'jeography', 'Falah', 1333, 60, true)
-// const chem_book = new Book("13", 'chemistri', 'Rezaei', 1358, 70, true)
-// const phys_book = new Book("14", 'physics', 'Nami', 1387, 80, true)
-// const st_book = new Book("15", 'statistics', 'Zamani', 1395, 90, true)
-
-// let books_ls = [math_book, jeo_book, chem_book, phys_book]
-// const library_manager = new Library(books_ls)
-
-// // checking outputs -------------------
-// library_manager.book_count()
-// library_manager.list_by_author()
-// library_manager.find_book('math')
-// console.log(library_manager.remove_book(12))
-// console.log(library_manager.add_book(st_book))
-
-
-app.listen(4000)
+// app.get("/bookss/search", (req, res) => {
+//     const filter = req.query
+//     console.log(filter.title)
+//     res.send()
+// })

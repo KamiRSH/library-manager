@@ -7,6 +7,8 @@ export class FileSys{
             return FileSys.instance
         }
         FileSys.instance = this
+        this.exist("./users.json")
+        this.exist("./books.json")
     }
   
   async read(fileName){
