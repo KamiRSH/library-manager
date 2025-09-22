@@ -1,15 +1,24 @@
 // import { FileSys } from "../repo/file_system.js"
 import { DTO } from "../model.js"
-const fileSys = new FileSys()
+import { Tools } from "./tools.js"
+// const fileSys = new FileSys()
 const dto = new DTO()
+const tools = new Tools()
 
 export class ManageUser{
-    constructor(usersLi) {
+    constructor() {
         if (ManageUser.instance){
             return ManageUser.instance
         }
         ManageUser.instance = this
-        this.usersLi = usersLi
+        this.usersLi = []
+        
+        
+    }
+
+    async init(){
+        this.usersLi = await dto.jFile_to_objUsers()
+        dto.objUsers_to_jFile(this.usersLi)     // resetting tokens
     }
 
     signUp_userGiveID(detail, file){
@@ -24,47 +33,48 @@ export class ManageUser{
         return [file, `user id: ${detail["id"]} successfully added;\nnow you can sign in`]
     }
 
-    signUp(objDetail){
-        for (const i of this.usersLi){
-            if (i.phone == objDetail.phone){
+    signUp(objUser){
+        for(const i of this.usersLi){
+            if(i.phone == objUser.phone){
                 return null
             }
         }
-        // detail.id = this.usersLi.length
-        // detail.fullName = ""
-        // detail.birthDate = ""
-        // detail.email = ""
-        // if (this.usersLi.length == 0){
-        //     detail.role = "admin"
-        // }else{
-        //     detail.role = "user"
-        // }
-
-        
-        // file[Object.keys(file).length + 1] = detail
-        this.usersLi.push(objDetail)
+        // set id and role
+        if(this.usersLi.length == 0){
+            objUser.id = 0
+            objUser.role = "admin"
+        }else{
+            const lastId = this.usersLi[this.usersLi.length -1].id
+            objUser.id = lastId + 1
+            objUser.role = "user"
+        }   
+        this.usersLi.push(objUser)
         dto.objUsers_to_jFile(this.usersLi)
-        return objDetail
+        console.log(this.usersLi)
+        return objUser
     }
 
-    logIn(detail){
+    logIn(objDetail, token){
         for (const i of this.usersLi){
-            if (detail.phone == i.phone){
-                if (detail.password == i.password){
-                    // const token = Math.round(Math.random() * (10 ** 16 - 10 **15)) + 10 ** 15
-                    return this.usersLi.indexOf(i)
+            if (objDetail.phone == i.phone){
+                if (objDetail.password == i.password){
+                    const index = this.usersLi.indexOf(i)
+                    this.usersLi[index].token = token
+                    dto.objUsers_to_jFile(this.usersLi)
+                    return true
                 }else {
-                    return -1
+                    return false
                 }
             }
         }
-        return -1
+        return false
     }
 
-    view(id, tokens, token){
-        if (Number(id) < this.usersLi.length){
-            if (token == tokens[id]){
-                return this.usersLi[id]
+    view(id, token){
+        const index = tools.indexOfId(this.usersLi, id)
+        if (index != -1){
+            if(this.usersLi[index].token == token){
+                return this.usersLi[index]
             }else{
                 return "wrong token"
             }
@@ -73,27 +83,27 @@ export class ManageUser{
         }
     }
 
-    edit(id, detail, tokens, token){
-        if (Number(id) < this.usersLi.length){
-            if (token == tokens[id]){
-                for (const i of Object.keys(detail)){
-                    this.usersLi[id][i] = detail[i]
+    edit(id, detail, token){
+        const index = tools.indexOfId(this.usersLi, id)
+        if(index != -1){
+            if(this.usersLi[index].token == token){
+                for(const i of Object.keys(detail)){
+                    if(detail[i]){
+                        this.usersLi[index][i] = detail[i]
+                    }
+                    // console.log(i)
+                    // console.log(this.usersLi[index][i])
+                    // console.log(detail)
+                    // console.log(detail[i])
+                    // console.log(this.usersLi[index])
                 }
-                fileSys.write("./repo/users.json", this.usersLi)
+                dto.objUsers_to_jFile(this.usersLi)
                 return "your info successfully updated:"
             }else{
                 return "wrong token"
             }
         }else{
             return `couldn't find user with id ${id}`
-        }
-    }
-
-    beAdmin(tokens, token){
-        if (token == tokens[0]){
-            return true
-        }else{
-            return false
         }
     }
 

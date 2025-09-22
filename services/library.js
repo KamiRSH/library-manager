@@ -1,30 +1,25 @@
 import { FileSys } from "../repo/file_system.js"
-const fileSys = new FileSys()
+import { DTO } from "../model.js"
+import { Tools } from "./tools.js"
+import { ManageUser } from "./manage_user.js"
+const dto = new DTO()
+// const fileSys = new FileSys()
+const tools = new Tools()
+const userManager = new ManageUser
 
-export class Library {
-    constructor(booksLi) {
+export class Library{
+    constructor() {
         if (Library.instance){
             return Library.instance
         }
         Library.instance = this
-        this.booksLi = booksLi
+        // this.booksLi = booksLi
+        this.booksLi = []
     }
 
-    static beAdmin(tokens, token){
-        if (token == tokens[0]){
-            return true
-        }else{
-            return false
-        }
-    }
-
-    static findIndexById(id){
-        const usingConstructor = new Library()
-        for (const i of usingConstructor.booksLi){
-            if (i.id == id){
-                return usingConstructor.booksLi.indexOf(i)
-            }
-        }
+    async init(){
+        this.booksLi = await dto.jFile_to_objBooks()
+        dto.objBooks_to_jFile(this.booksLi)     // no need for this line
     }
 
     viewTitles(){
@@ -36,24 +31,27 @@ export class Library {
     }
 
     viewDetail(id){
-        if (Library.findIndexById(id) < this.booksLi.length){
-            return this.booksLi[Library.findIndexById(id)]
+        const index = tools.indexOfId(this.booksLi, id)
+        if (index != -1){
+            return this.booksLi[index]
         }else{
             return `couldn't find your book with id ${id}`
         }
         
     }
 
-    addBook(detail, tokens, token) {
-        if (Library.beAdmin(tokens, token)){
+    addBook(detail, token){
+        if (tools.beAdmin(userManager.usersLi, token)){
             if (this.booksLi.length == 0){
                 detail.id = 0
             }else{
-                detail.id = this.booksLi[this.booksLi.length -1].id + 1
+                const lastId = this.booksLi[this.booksLi.length -1].id
+                detail.id = lastId + 1
             }
             detail.stock = true
             this.booksLi.push(detail)
-            fileSys.write("./repo/books.json", this.booksLi)
+            dto.objBooks_to_jFile(this.booksLi)
+            // fileSys.write("./repo/books.json", this.booksLi)
             return `your book with id ${detail.id} successfully added`
         }else{
             return "make sure you are admin and you entered your token correctly"
@@ -61,13 +59,17 @@ export class Library {
         
     }
 
-    editBook(id, detail, tokens, token){
-        if (Library.beAdmin(tokens, token)){
-            if (Library.findIndexById(id) < this.booksLi.length){
-                for (const i of Object.keys(detail)){
-                    this.booksLi[Library.findIndexById(id)][i] = detail[i]
+    editBook(id, detail, token){
+        const index = tools.indexOfId(this.booksLi, id)
+        if(tools.beAdmin(userManager.usersLi, token)){
+            if(index != -1){
+                for(const i of Object.keys(detail)){
+                    if(detail[i]){
+                        this.booksLi[index][i] = detail[i]
+                    }                    
                 }
-                fileSys.write("repo/books.json", this.booksLi)
+                dto.objBooks_to_jFile(this.booksLi)
+                // fileSys.write("repo/books.json", this.booksLi)
                 return "the books info successfully updated:"
             }else{
                 return `couldn't find the book with id ${id}`
@@ -78,11 +80,13 @@ export class Library {
         
     }
 
-    removeBook(id, tokens, token) {
-        if (Library.beAdmin(tokens, token)){
-            if (Library.findIndexById(id) < this.booksLi.length){
-                this.booksLi.splice(Library.findIndexById(id), 1)
-                fileSys.write("./repo/books.json", this.booksLi)
+    removeBook(id, token){
+        const index = tools.indexOfId(this.booksLi, id)
+        if(tools.beAdmin(userManager.usersLi, token)){
+            if(index != -1){
+                this.booksLi.splice(index, 1)
+                dto.objBooks_to_jFile(this.booksLi)
+                // fileSys.write("./repo/books.json", this.booksLi)
                 return `the book with id ${id} successfully deleted`
             }else{
                 return `the book with id ${id} doesn't exist`

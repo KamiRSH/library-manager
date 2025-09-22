@@ -1,7 +1,6 @@
 import express from "express"
+import { DTO } from "./model.js"    // aval code haye dakhele model bayad khande she bad code haye core (baraye tartib exist va read
 import { Core } from "./core.js"
-import { DTO } from "./model.js"
-
 const dto = new DTO()
 const core = new Core()
 
@@ -14,19 +13,22 @@ app.get("/", (req, res) => {
 })
 
 app.post("/signup", (req, res) => {
-    res.send(core.signup(req.body))
+    const objDetail = dto.jDetailToObjUser(req.body)
+    res.send(core.signup(objDetail))
 })
 
 app.post("/login", (req, res) => {
-    res.send(core.login(req.body))
+    const objDetail = dto.jDetailToObjUser(req.body)
+    res.send(core.login(objDetail))
 })
 
 app.get("/users/:id/profile", (req, res) => {
-    res.send(core.viewUser(req.params.id, req.get("token")))
+    res.send(core.viewUser(Number(req.params.id), req.get("token")))
 })
 
 app.patch("/users/:id/profile", (req, res) => {
-    res.send(core.editUser(req.params.id, req.body, req.get("token")))
+    const objDetail = dto.jDetailToObjUser(req.body)
+    res.send(core.editUser(Number(req.params.id), objDetail, req.get("token")))
 })
 
 app.get("/books", (req, res) => {
@@ -34,19 +36,21 @@ app.get("/books", (req, res) => {
 })
 
 app.get("/books/:book_id", (req, res) => {
-    res.send(core.viewBook(req.params.book_id))
+    res.send(core.viewBook(Number(req.params.book_id)))
 })
 
 app.post("/admin-panel/books", (req, res) => {
-    res.send(core.addBook(req.body, req.get("token")))
+    const objDetail = dto.jDetailToObjBooks(req.body)
+    res.send(core.addBook(objDetail, req.get("token")))
 })
 
 app.patch("/admin-panel/books/:book_id", (req, res) => {
-    res.send(core.editBook(req.params.book_id, req.body, req.get("token")))
+    const objDetail = dto.jDetailToObjBooks(req.body)
+    res.send(core.editBook(Number(req.params.book_id), objDetail, req.get("token")))
 })
 
 app.delete("/admin-panel/books/:book_id", (req, res) => {
-    res.send(core.removeBook(req.params.book_id))
+    res.send(core.removeBook(Number(req.params.book_id), req.get("token")))
 })
 
 app.get("/bookss/search", (req, res) => {

@@ -7,8 +7,8 @@ export class FileSys{
             return FileSys.instance
         }
         FileSys.instance = this
-        this.exist("./users.json")
-        this.exist("./books.json")
+        // this.exist("./users.json")
+        // this.exist("./books.json")
     }
   
   async read(fileName){
@@ -41,9 +41,13 @@ export class FileSys{
         await fs.access(fileName, constants.F_OK)
         // return true
     }catch(err){
-        await fs.writeFile(fileName, [])
+        await fs.writeFile(fileName, JSON.stringify([]))
         // return false
     }
   }
 
 }
+
+const fileSys = new FileSys()
+await fileSys.exist("./repo/users.json")
+await fileSys.exist("./repo/books.json")
