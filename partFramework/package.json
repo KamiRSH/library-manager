@@ -1,0 +1,17 @@
+{
+  "name": "project",
+  "version": "1.0.0-alpha.0",
+  "description": "new project with partFramework@10",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "dependencies": {
+    "@partFramework/http": "^1.0.0",
+
+    "partFramework": "^10.2.0",
+    "joi": "^17.13.3"
+  }
+}

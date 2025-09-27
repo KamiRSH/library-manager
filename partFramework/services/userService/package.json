@@ -1,0 +1,14 @@
+{
+  "name": "userService",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "MohammadHossein",
+  "license": "ISC",
+  "description": "a service for manage user actions",
+  "dependencies": {
+  }
+}
