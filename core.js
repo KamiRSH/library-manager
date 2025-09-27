@@ -59,7 +59,7 @@ export class Core{
         return library.viewTitles()
     }
 
-    viewBook(bookId){
+    viewBookById(bookId){
         return library.viewDetail(bookId)
     }
 

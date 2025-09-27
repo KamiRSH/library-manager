@@ -36,7 +36,7 @@ app.get("/books", (req, res) => {
 })
 
 app.get("/books/:book_id", (req, res) => {
-    res.send(core.viewBook(Number(req.params.book_id)))
+    res.send(core.viewBookById(Number(req.params.book_id)))
 })
 
 app.post("/admin-panel/books", (req, res) => {
